@@ -14,7 +14,7 @@ import numpy as np
 def load_yaml(file, opt=None):
     """
     Load yaml file and return a dictionary.
-
+    加载yaml参数
     Parameters
     ----------
     file : string

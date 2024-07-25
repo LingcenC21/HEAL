@@ -45,6 +45,7 @@ heter:
 
 fusion:
   core_method: 'intermediateheter'
+  #中间层融合方法，通常在中间层进行特征融合。适用于处理来自不同传感器（如激光雷达、相机）或不同车辆的数据，进行联合特征提取和处理。
   dataset: 'opv2v'
   args: 
     proj_first: false
@@ -53,8 +54,10 @@ fusion:
 
 
 preprocess:
+#预处理
   # options: BasePreprocessor, VoxelPreprocessor, BevPreprocessor
   core_method: 'SpVoxelPreprocessor'
+  #该方法用于将激光雷达点云数据体素化。将点云划分成规则的网格（体素），每个体素包含若干点。这些体素特征会作为神经网络的输入。
   args:
     voxel_size: [0.4, 0.4, 4] # useful
     max_points_per_voxel: 1 # useless
@@ -65,7 +68,9 @@ preprocess:
 
 # anchor box related
 postprocess:
+#后处理
   core_method: 'VoxelPostprocessor' # VoxelPostprocessor, BevPostprocessor supported
+  #体素后处理方法。用于将网络输出的体素特征映射回实际空间，并根据预设的锚点框生成最终的检测结果。包括非极大值抑制（NMS）等步骤。
   gt_range: *cav_lidar
   anchor_args:
     cav_lidar_range: *cav_lidar
@@ -90,6 +95,7 @@ postprocess:
 # model related
 model:
   core_method: heter_pyramid_collab
+  #多模态协作金字塔模型，利用多层特征金字塔进行目标检测和特征融合，特别适用于自动驾驶中的多传感器数据融合。
   args:
     lidar_range: *cav_lidar
     supervise_single: true
@@ -140,6 +146,7 @@ model:
 
 loss:
   core_method: point_pillar_pyramid_loss
+  #点柱金字塔损失函数，结合分类、回归、方向和深度等多种损失，适用于点柱网络结构的多任务学习。
   args:
     pos_cls_weight: 2.0
     cls:
@@ -165,6 +172,7 @@ loss:
 
 optimizer:
   core_method: Adam
+  #一种自适应矩估计优化器，能够根据梯度的一阶和二阶矩估计自适应调整学习率，适用于处理稀疏梯度和高噪声的数据。
   lr: 0.002
   args:
     eps: 1e-10
@@ -172,6 +180,7 @@ optimizer:
 
 lr_scheduler:
   core_method: multistep #step, multistep and Exponential support
+  #多步学习率调度器，在训练过程中在预设的步长处减小学习率，以便在训练后期对模型进行更精细的调整和优化。
   gamma: 0.1
   step_size: [15, 25]
 

@@ -163,3 +163,4 @@ opencood/tools/save_params.py
 ./vscode
 .vscode
 opencood/tools/inference_w_noise_heter.py
+训练.zip

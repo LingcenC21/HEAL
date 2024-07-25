@@ -12,6 +12,7 @@ import shutil
 import torch
 import torch.optim as optim
 
+#脚本备份函数
 def backup_script(full_path, folders_to_save=["models", "data_utils", "utils", "loss"]):
     target_folder = os.path.join(full_path, 'scripts')
     if not os.path.exists(target_folder):
@@ -25,6 +26,7 @@ def backup_script(full_path, folders_to_save=["models", "data_utils", "utils", "
         source_folder = os.path.join(current_path, f'../{folder_name}')
         shutil.copytree(source_folder, ttarget_folder)
 
+#缺失键打印
 def check_missing_key(model_state_dict, ckpt_state_dict):
     checkpoint_keys = set(ckpt_state_dict.keys())
     model_keys = set(model_state_dict.keys())
@@ -50,7 +52,7 @@ def check_missing_key(model_state_dict, ckpt_state_dict):
     print("You can go to tools/train_utils.py to print the full missing key name!")
     print("--------------------------------")
 
-
+#加载保存的模型
 def load_saved_model(saved_path, model):
     """
     Load saved model if exiseted
@@ -101,7 +103,7 @@ def load_saved_model(saved_path, model):
 
     return initial_epoch, model
 
-
+#设置训练目录
 def setup_train(hypes):
     """
     Create folder for saved model based on current timestep and model name
@@ -137,7 +139,7 @@ def setup_train(hypes):
 
     return full_path
 
-
+#实例模型
 def create_model(hypes):
     """
     Import the module "models/[model_name].py
@@ -173,7 +175,7 @@ def create_model(hypes):
     instance = model(backbone_config)
     return instance
 
-
+#计算损失
 def create_loss(hypes):
     """
     Create the loss function based on the given loss name.
@@ -209,7 +211,7 @@ def create_loss(hypes):
     criterion = loss_func(loss_func_config)
     return criterion
 
-
+#设置优化器
 def setup_optimizer(hypes, model):
     """
     Create optimizer corresponding to the yaml file
@@ -233,7 +235,7 @@ def setup_optimizer(hypes, model):
         return optimizer_method(model.parameters(),
                                 lr=method_dict['lr'])
 
-
+#设置学习率调度器
 def setup_lr_schedular(hypes, optimizer, init_epoch=None):
     """
     Set up the learning rate schedular.
@@ -273,7 +275,7 @@ def setup_lr_schedular(hypes, optimizer, init_epoch=None):
 
     return scheduler
 
-
+#数据转移函数
 def to_device(inputs, device):
     if isinstance(inputs, list):
         return [to_device(x, device) for x in inputs]

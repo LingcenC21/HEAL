@@ -16,15 +16,12 @@ from opencood.data_utils.datasets import build_dataset
 
 from icecream import ic
 
-
+#参数解析器
 def train_parser():
     parser = argparse.ArgumentParser(description="synthetic data generation")
-    parser.add_argument("--hypes_yaml", "-y", type=str, required=True,
-                        help='data generation yaml file needed ')
-    parser.add_argument('--model_dir', default='',
-                        help='Continued training path')
-    parser.add_argument('--fusion_method', '-f', default="intermediate",
-                        help='passed to inference.')
+    parser.add_argument("--hypes_yaml", "-y", type=str, required=True,help='data generation yaml file needed ')
+    parser.add_argument('--model_dir', default='',help='Continued training path')
+    parser.add_argument('--fusion_method', '-f', default="intermediate",help='passed to inference.')
     opt = parser.parse_args()
     return opt
 
@@ -35,9 +32,7 @@ def main():
 
     print('Dataset Building')
     opencood_train_dataset = build_dataset(hypes, visualize=False, train=True)
-    opencood_validate_dataset = build_dataset(hypes,
-                                              visualize=False,
-                                              train=False)
+    opencood_validate_dataset = build_dataset(hypes, visualize=False, train=False)
 
     train_loader = DataLoader(opencood_train_dataset,
                               batch_size=hypes['train_params']['batch_size'],
@@ -108,11 +103,11 @@ def main():
             model.model_train_init()
         except:
             print("No model_train_init function")
-        for i, batch_data in enumerate(train_loader):
+        for i, batch_data in enumerate(train_loader):#遍历数据集的批次数据
             if batch_data is None or batch_data['ego']['object_bbx_mask'].sum()==0:
                 continue
             model.zero_grad()
-            optimizer.zero_grad()
+            optimizer.zero_grad()#梯度清零
             batch_data = train_utils.to_device(batch_data, device)
             batch_data['ego']['epoch'] = epoch
             ouput_dict = model(batch_data['ego'])
@@ -134,11 +129,11 @@ def main():
             torch.save(model.state_dict(),
                        os.path.join(saved_path,
                                     'net_epoch%d.pth' % (epoch + 1)))
-
+#验证集调节
         if epoch % hypes['train_params']['eval_freq'] == 0:
             valid_ave_loss = []
 
-            with torch.no_grad():
+            with torch.no_grad():#禁止梯度计算
                 for i, batch_data in enumerate(val_loader):
                     if batch_data is None:
                         continue
